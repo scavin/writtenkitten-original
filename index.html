@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -5,7 +6,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 <link href="http://fonts.googleapis.com/css?family=Indie+Flower" rel="stylesheet" type="text/css" />
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@1.11.0/dist/jquery.min.js"></script>
 <style type="text/css">
 body {  background: url(kittenbg.gif) repeat #6AAFDA }
 ::-moz-selection {
@@ -136,6 +137,7 @@ var kittens_earned = 0;
 var kittens_shown = 0;
 var warning_shown = false;
 var search_for = 'kitten';
+var last_word_count = 0;
 
 var valid_licenses="4,5,7";
 /*
@@ -181,14 +183,22 @@ function word_count(text, wc) {
   if (current_word_count >= 10 && warning_shown == false) {
     show_warning();
   }
+  text = text.replace(/[\u4e00-\u9fa5]/g, " hanzi "); 
   text = text.replace(/^\s*|\s*$/g,''); //removes whitespace from front and end
   text = text.replace(/\s+/g,' '); // collapse multiple consecutive spaces
   var words = text.split(" ");
   wc.value = words.length;
-  current_word_count = wc.value = words.length;
-  $("#displayWords").html(wc.value);
+  var current_word_number = words.length
+  
+  if (last_word_count < current_word_number) {
+    // cumulate word counts
+    current_word_count = current_word_count + current_word_number - last_word_count;
+  }
+  last_word_count = current_word_number // update last_word_count
+  
+  $("#displayWords").html(wc.value + "/" + current_word_count);
   kittens_earned = current_word_count / words_for_reward;
-  if (kittens_earned >= kittens_shown+1) {
+  if (kittens_earned >= kittens_shown) {
     show_kitten();
   }
 }
@@ -308,6 +318,15 @@ function tabs(e) {
   }
 }
 </script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-B7Z00R8V9W"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-B7Z00R8V9W');
+</script>
 </head>
 <body onLoad="set_search($('#search').val()); set_title(); restore_text(); set_tabs();">
 <div id="main">
@@ -391,16 +410,6 @@ cuter and fuzzier.
   <img src="" id="nextKitten"/>
 </div> <!-- about -->
 
-<script>
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-26983491-1']);
-  _gaq.push(['_trackPageview']);
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-</script>
 <!--[if lt IE 7 ]>
   <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
   <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
